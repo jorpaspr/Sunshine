@@ -31,22 +31,10 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 public class ForecastFragment extends Fragment {
 
     private static final String LOG_TAG = ForecastFragment.class.getSimpleName();
-
-    private static final String [] forecastStrings = new String[] {
-            "Today - Sunny 88/63",
-            "Tomorrow - Foggy - 70/46",
-            "Weds - Cloudy - 72/63",
-            "Thurs - Rainy 64/51",
-            "Fri - Foggy - 70/46",
-            "Sat - Sunny - 76/68"
-    };
-
     private ArrayAdapter<String> mForecastAdapter;
 
     public ForecastFragment() {
@@ -66,14 +54,24 @@ public class ForecastFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_refresh) {
-            SharedPreferences sharedPreferences = PreferenceManager
-                    .getDefaultSharedPreferences(getActivity());
-            String location = sharedPreferences.getString(getString(R.string.pref_location_key),
-                    getString(R.string.pref_location_default));
-            new FetchWeatherTask().execute(location);
+            updateWeather();
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void updateWeather() {
+        SharedPreferences sharedPreferences = PreferenceManager
+                .getDefaultSharedPreferences(getActivity());
+        String location = sharedPreferences.getString(getString(R.string.pref_location_key),
+                getString(R.string.pref_location_default));
+        new FetchWeatherTask().execute(location);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        updateWeather();
     }
 
     @Override
@@ -81,12 +79,8 @@ public class ForecastFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        List<String> weekForecast = new ArrayList<>();
-
-        Collections.addAll(weekForecast, forecastStrings);
-
-        mForecastAdapter = new ArrayAdapter<>(getActivity(),
-                R.layout.list_item_forecast, R.id.list_item_forecast_textview, weekForecast);
+        mForecastAdapter = new ArrayAdapter<>(getActivity(), R.layout.list_item_forecast,
+                R.id.list_item_forecast_textview, new ArrayList<String>());
 
         ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
         listView.setAdapter(mForecastAdapter);
@@ -197,9 +191,6 @@ public class ForecastFragment extends Fragment {
                 resultStrs[i] = day + " - " + description + " - " + highAndLow;
             }
 
-            /*for (String s : resultStrs) {
-                Log.v(LOG_TAG, "Forecast entry: " + s);
-            }*/
             return resultStrs;
 
         }
@@ -228,7 +219,6 @@ public class ForecastFragment extends Fragment {
                         .appendQueryParameter("mode",mode)
                         .appendQueryParameter("units",units)
                         .appendQueryParameter("cnt",days);
-                //Log.v(LOG_TAG, uriBuilder.toString());
 
                 // Construct the URL for the OpenWeatherMap query
                 // Possible parameters are available at OWM's forecast API page, at
@@ -264,8 +254,6 @@ public class ForecastFragment extends Fragment {
                 }
                 forecastJsonStr = buffer.toString();
 
-                //Log.v(LOG_TAG, "Forecast JSON String: " + forecastJsonStr);
-
             } catch (IOException e) {
                 Log.e(LOG_TAG, "Error ", e);
                 // If the code didn't successfully get the weather data, there's no point in attempting
@@ -296,16 +284,6 @@ public class ForecastFragment extends Fragment {
 
         @Override
         protected void onPostExecute(String[] strings) {
-            /*List<String> weekForecast = new ArrayList<>();
-
-            Collections.addAll(weekForecast, strings);
-
-            mForecastAdapter = new ArrayAdapter<String>(getActivity(),
-                    R.layout.list_item_forecast, R.id.list_item_forecast_textview, weekForecast);
-
-            ListView listView = (ListView) getActivity().findViewById(R.id.listview_forecast);
-            listView.setAdapter(mForecastAdapter);*/
-
             if (strings != null) {
                 mForecastAdapter.clear();
                 for (String dayForecastStr : strings) {
