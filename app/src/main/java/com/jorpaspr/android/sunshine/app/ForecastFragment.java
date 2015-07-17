@@ -34,7 +34,6 @@ import java.util.ArrayList;
 
 public class ForecastFragment extends Fragment {
 
-    private static final String LOG_TAG = ForecastFragment.class.getSimpleName();
     private ArrayAdapter<String> mForecastAdapter;
 
     public ForecastFragment() {
@@ -65,7 +64,9 @@ public class ForecastFragment extends Fragment {
                 .getDefaultSharedPreferences(getActivity());
         String location = sharedPreferences.getString(getString(R.string.pref_location_key),
                 getString(R.string.pref_location_default));
-        new FetchWeatherTask().execute(location);
+        String units = sharedPreferences.getString(getString(R.string.pref_units_key),
+                getString(R.string.pref_units_metric));
+        new FetchWeatherTask().execute(location, units);
     }
 
     @Override
@@ -100,6 +101,8 @@ public class ForecastFragment extends Fragment {
 
     private class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
 
+        private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
+
         /* The date/time conversion code is going to be moved outside the asynctask later,
          * so for convenience we're breaking it out into its own method now.
          */
@@ -121,6 +124,10 @@ public class ForecastFragment extends Fragment {
             return roundedHigh + "/" + roundedLow;
         }
 
+        private double celsiusToFahrenheit(double temperature) {
+            return (temperature * 1.8) + 32;
+        }
+
         /**
          * Take the String representing the complete forecast in JSON Format and
          * pull out the data we need to construct the Strings needed for the wireframes.
@@ -128,7 +135,7 @@ public class ForecastFragment extends Fragment {
          * Fortunately parsing is easy:  constructor takes the JSON string and converts it
          * into an Object hierarchy for us.
          */
-        private String[] getWeatherDataFromJson(String forecastJsonStr, int numDays)
+        private String[] getWeatherDataFromJson(String forecastJsonStr, int numDays, String units)
                 throws JSONException {
 
             // These are the names of the JSON objects that need to be extracted.
@@ -187,6 +194,13 @@ public class ForecastFragment extends Fragment {
                 double high = temperatureObject.getDouble(OWM_MAX);
                 double low = temperatureObject.getDouble(OWM_MIN);
 
+                if (units.equals(getString(R.string.pref_units_imperial))) {
+                    high = celsiusToFahrenheit(high);
+                    low = celsiusToFahrenheit(low);
+                } else if (!units.equals(getString(R.string.pref_units_metric))) {
+                    Log.d(LOG_TAG, "Unit type not found: " + units);
+                }
+
                 highAndLow = formatHighLows(high, low);
                 resultStrs[i] = day + " - " + description + " - " + highAndLow;
             }
@@ -206,9 +220,11 @@ public class ForecastFragment extends Fragment {
             String forecastJsonStr = null;
 
             String postalCode = params[0];
-            String mode = "json";
-            String units = "metric";
-            String days = "7";
+            String units = params[1];
+
+            final String UNITS = getString(R.string.pref_units_metric);
+            final String MODE = "json";
+            final String DAYS = "7";
 
             try {
                 Uri.Builder uriBuilder = new Uri.Builder()
@@ -216,9 +232,9 @@ public class ForecastFragment extends Fragment {
                         .authority("api.openweathermap.org")
                         .path("/data/2.5/forecast/daily")
                         .appendQueryParameter("q",postalCode)
-                        .appendQueryParameter("mode",mode)
-                        .appendQueryParameter("units",units)
-                        .appendQueryParameter("cnt",days);
+                        .appendQueryParameter("mode",MODE)
+                        .appendQueryParameter("units",UNITS)
+                        .appendQueryParameter("cnt",DAYS);
 
                 // Construct the URL for the OpenWeatherMap query
                 // Possible parameters are available at OWM's forecast API page, at
@@ -273,7 +289,7 @@ public class ForecastFragment extends Fragment {
             }
 
             try {
-                return getWeatherDataFromJson(forecastJsonStr, Integer.parseInt(days));
+                return getWeatherDataFromJson(forecastJsonStr, Integer.parseInt(DAYS), units);
             } catch (JSONException e) {
                 Log.e(LOG_TAG, e.getMessage(), e);
                 e.printStackTrace();
