@@ -2,10 +2,14 @@ package com.jorpaspr.android.sunshine.app;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.ShareActionProvider;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,11 +24,10 @@ public class DetailActivity extends ActionBarActivity {
         setContentView(R.layout.activity_detail);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment())
+                    .add(R.id.container, new DetailFragment())
                     .commit();
         }
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -52,9 +55,20 @@ public class DetailActivity extends ActionBarActivity {
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment {
+    public static class DetailFragment extends Fragment {
 
-        public PlaceholderFragment() {
+        private static final String LOG_TAG = DetailFragment.class.getSimpleName();
+
+        private static final String FORECAST_SHARE_HASHTAG = " #SunshineApp";
+        private String mforecastStr;
+
+        public DetailFragment() {
+        }
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            setHasOptionsMenu(true);
         }
 
         @Override
@@ -65,13 +79,47 @@ public class DetailActivity extends ActionBarActivity {
             Intent intent = getActivity().getIntent();
 
             if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
-                String message = intent.getStringExtra(Intent.EXTRA_TEXT);
+                mforecastStr = intent.getStringExtra(Intent.EXTRA_TEXT);
 
                 TextView textView = (TextView) rootView.findViewById(R.id.detail_text);
-                textView.setText(message);
+                textView.setText(mforecastStr);
             }
 
             return rootView;
+        }
+
+        @Override
+        public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+            // Inflate the menu
+            inflater.inflate(R.menu.detailfragment, menu);
+
+            // Locate MenuItem with ShareActionProvider
+            MenuItem menuItem = menu.findItem(R.id.action_share);
+
+            // Fetch and store ShareActionProvider
+            ShareActionProvider mShareActionProvider =
+                    (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
+
+            if (mShareActionProvider != null) {
+                Intent shareIntent = new Intent();
+                shareIntent.setAction(Intent.ACTION_SEND);
+                shareIntent.putExtra(Intent.EXTRA_TEXT, mforecastStr + FORECAST_SHARE_HASHTAG);
+                shareIntent.setType("text/plain");
+                mShareActionProvider.setShareIntent(shareIntent);
+            } else {
+                Log.d(LOG_TAG, "ShareActionProvider is null");
+            }
+
+            super.onCreateOptionsMenu(menu, inflater);
+        }
+
+        @Override
+        public boolean onOptionsItemSelected(MenuItem item) {
+            if (item.getItemId() == R.id.action_share) {
+                Intent intent = new Intent();
+                return true;
+            }
+            return super.onOptionsItemSelected(item);
         }
     }
 }
