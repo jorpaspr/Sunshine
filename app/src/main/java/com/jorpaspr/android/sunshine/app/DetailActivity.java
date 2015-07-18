@@ -103,6 +103,7 @@ public class DetailActivity extends ActionBarActivity {
             if (mShareActionProvider != null) {
                 Intent shareIntent = new Intent();
                 shareIntent.setAction(Intent.ACTION_SEND);
+                shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
                 shareIntent.putExtra(Intent.EXTRA_TEXT, mforecastStr + FORECAST_SHARE_HASHTAG);
                 shareIntent.setType("text/plain");
                 mShareActionProvider.setShareIntent(shareIntent);
