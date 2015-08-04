@@ -80,8 +80,13 @@ public class ForecastAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
         ViewHolder viewHolder = (ViewHolder) view.getTag();
 
-        // Use placeholder image for now
-        viewHolder.iconView.setImageResource(R.mipmap.ic_launcher);
+        // Read weather condition ID from cursor
+        int weatherConditionId = cursor.getInt(ForecastFragment.COL_WEATHER_CONDITION_ID);
+        // Use weather art or icon image depending on the view type
+        int imageResource = getItemViewType(cursor.getPosition()) == VIEW_TYPE_TODAY ?
+                Utility.getArtResourceForWeatherCondition(weatherConditionId) :
+                Utility.getIconResourceForWeatherCondition(weatherConditionId);
+        viewHolder.iconView.setImageResource(imageResource);
 
         // Read date from cursor
         long date = cursor.getLong(ForecastFragment.COL_WEATHER_DATE);
@@ -90,9 +95,6 @@ public class ForecastAdapter extends CursorAdapter {
         // Read weather forecast from cursor
         String description = cursor.getString(ForecastFragment.COL_WEATHER_DESC);
         viewHolder.descriptionView.setText(description);
-
-        // Read user preference for metric or imperial temperature units
-        boolean isMetric = Utility.isMetric(context);
 
         // Read high temperature from cursor
         double high = cursor.getDouble(ForecastFragment.COL_WEATHER_MAX_TEMP);

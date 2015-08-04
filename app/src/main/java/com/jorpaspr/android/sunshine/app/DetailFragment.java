@@ -143,6 +143,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
         if (data != null && data.moveToFirst()) {
+            int imageResource = Utility.getArtResourceForWeatherCondition(
+                    data.getInt(COL_WEATHER_CONDITION_ID));
             long date = data.getLong(COL_WEATHER_DATE);
             String friendlyDate = Utility.getDayName(getActivity(), date);
             String formattedMonthDay = Utility.getFormattedMonthDay(getActivity(), date);
@@ -164,7 +166,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
             mforecast = String.format("%s - %s - %s/%s", formattedMonthDay, description, high, low);
 
-            mIconView.setImageResource(R.mipmap.ic_launcher);
+            mIconView.setImageResource(imageResource);
             mFriendlyDateView.setText(friendlyDate);
             mDateView.setText(formattedMonthDay);
             mDescriptionView.setText(description);
