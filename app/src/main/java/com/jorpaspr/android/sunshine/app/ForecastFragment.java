@@ -55,6 +55,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     static final int COL_COORD_LONG = 8;
 
     private ForecastAdapter mForecastAdapter;
+    private ListView mListView;
 
     /**
      * A callback interface that all activities containing this fragment must
@@ -120,10 +121,10 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         View rootView = inflater.inflate(R.layout.fragment_forecast, container, false);
         mForecastAdapter = new ForecastAdapter(getActivity(), null, 0);
 
-        ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
-        listView.setAdapter(mForecastAdapter);
+        mListView = (ListView) rootView.findViewById(R.id.listview_forecast);
+        mListView.setAdapter(mForecastAdapter);
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // CursorAdapter returns a cursor at the correct position for getItem(), or null
@@ -163,6 +164,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         mForecastAdapter.swapCursor(data);
+        mListView.smoothScrollToPosition(mListView.getCheckedItemPosition());
     }
 
     @Override
