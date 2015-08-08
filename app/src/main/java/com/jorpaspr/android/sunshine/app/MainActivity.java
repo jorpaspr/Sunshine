@@ -36,6 +36,9 @@ public class MainActivity extends ActionBarActivity
                     .replace(R.id.weather_detail_container, new DetailFragment(), DETAILFRAGMENT_TAG)
                     .commit();
         }
+
+        ((ForecastFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_forecast))
+                .setmUseTodayLayout(!mTwoPane);
     }
 
     @Override

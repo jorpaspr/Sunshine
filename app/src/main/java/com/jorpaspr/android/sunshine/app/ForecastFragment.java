@@ -56,6 +56,12 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
     private ForecastAdapter mForecastAdapter;
     private ListView mListView;
+    private boolean mUseTodayLayout;
+
+    public void setmUseTodayLayout(boolean mUseTodayLayout) {
+        this.mUseTodayLayout = mUseTodayLayout;
+        if (mForecastAdapter != null) mForecastAdapter.setmUseTodayLayout(mUseTodayLayout);
+    }
 
     /**
      * A callback interface that all activities containing this fragment must
