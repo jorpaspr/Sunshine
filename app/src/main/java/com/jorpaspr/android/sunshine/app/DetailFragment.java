@@ -184,6 +184,9 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             mforecast = String.format("%s - %s - %s/%s", formattedMonthDay, description, high, low);
 
             mIconView.setImageResource(imageResource);
+            // For accessibility, add a content description to the icon field
+            mIconView.setContentDescription(description);
+
             mFriendlyDateView.setText(friendlyDate);
             mDateView.setText(formattedMonthDay);
             mDescriptionView.setText(description);
