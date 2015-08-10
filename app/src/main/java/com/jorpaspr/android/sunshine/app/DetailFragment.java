@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.jorpaspr.android.sunshine.app.data.WeatherContract;
+import com.jorpaspr.android.sunshine.app.widget.WindView;
 
 public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -67,6 +68,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     private TextView mHumidityView;
     private TextView mWindView;
     private TextView mPressureView;
+    private WindView mWindViewX;
 
     public DetailFragment() {
     }
@@ -101,6 +103,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         mHumidityView = (TextView) rootView.findViewById(R.id.detail_humidity_textview);
         mWindView = (TextView) rootView.findViewById(R.id.detail_wind_textview);
         mPressureView = (TextView) rootView.findViewById(R.id.detail_pressure_textview);
+        mWindViewX = (WindView) rootView.findViewById(R.id.windview);
         return rootView;
     }
 
@@ -195,6 +198,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             mHumidityView.setText(humidity);
             mWindView.setText(wind);
             mPressureView.setText(pressure);
+            mWindViewX.setWindDirAngle(data.getFloat(COL_WEATHER_DEGREES));
+            mWindViewX.setWindSpeed(data.getFloat(COL_WEATHER_WIND_SPEED));
 
             // If onCreateOptionsMenu has already happened, we need to update the share intent now.
             if (mShareActionProvider != null) {

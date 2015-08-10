@@ -81,6 +81,11 @@
                 android:layout_marginTop="4dp"
                 android:layout_width="wrap_content"
                 android:textAppearance="?android:textAppearanceLarge" />
+
+            <com.jorpaspr.android.sunshine.app.widget.WindView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/windview"/>
         </LinearLayout>
 
         <LinearLayout
