@@ -38,8 +38,13 @@
         </activity>
 
         <provider
-            android:authorities="com.jorpaspr.android.sunshine.app"
-            android:name=".data.WeatherProvider" />
+            android:name=".data.WeatherProvider"
+            android:authorities="com.jorpaspr.android.sunshine.app" />
+
+        <service
+            android:name=".service.SunshineService"
+            android:exported="false" >
+        </service>
     </application>
 
 </manifest>

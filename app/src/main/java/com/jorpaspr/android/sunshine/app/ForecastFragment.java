@@ -1,5 +1,6 @@
 package com.jorpaspr.android.sunshine.app;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.jorpaspr.android.sunshine.app.data.WeatherContract;
+import com.jorpaspr.android.sunshine.app.service.SunshineService;
 
 public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -111,7 +113,9 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
     private void updateWeather() {
         String location = Utility.getPreferredLocation(getActivity());
-        new FetchWeatherTask(getActivity()).execute(location);
+        Intent intent = new Intent(getActivity(), SunshineService.class);
+        intent.putExtra(SunshineService.LOCATION_QUERY_EXTRA, location);
+        getActivity().startService(intent);
     }
 
     //TODO Implement scheduled updates in the background
