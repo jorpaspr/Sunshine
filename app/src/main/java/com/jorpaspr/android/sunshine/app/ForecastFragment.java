@@ -114,13 +114,6 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         SunshineSyncAdapter.syncImmediately(getActivity());
     }
 
-    //TODO Implement scheduled updates in the background
-//    @Override
-//    public void onStart() {
-//        super.onStart();
-//        updateWeather();
-//    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
