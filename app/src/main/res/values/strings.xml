@@ -17,7 +17,11 @@
     <string name="pref_units_label">Pick your units</string>
     <string name="pref_units_metric">metric</string>
     <string name="pref_units_imperial">imperial</string>
-
+    <string name="pref_enable_notifications_key">enable_notifications</string>
+    <string name="pref_enable_notifications_label">Weather Notifications</string>
+    <string name="pref_enable_notifications_true">Enabled</string>
+    <string name="pref_enable_notifications_false">Disabled</string>
+    <string name="pref_enable_notifications_default" translatable="false">true</string>
 
     <!-- Language-specific constants -->
     <string name="today">Today</string>
